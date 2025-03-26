@@ -1,0 +1,23 @@
+[project]
+name = "hw08"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Hrebynakha Anatolii",email = "hrebynakha@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg (>=0.30.0,<0.31.0)",
+    "alembic (>=1.15.1,<2.0.0)",
+    "fastapi[standard] (>=0.115.12,<0.116.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+
