@@ -1,7 +1,7 @@
 include .env
 
 db:
-	docker run --name hw08 -p 5432:5432 -e POSTGRES_PASSWORD=${DB_PASSWORD} -d postgres
+	docker run --name hw08 -p 5432:5432 -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -d postgres
 migration:
 	alembic revision --autogenerate -m 'Init'
 migrate:
@@ -10,9 +10,9 @@ f:
 	black . --exclude=venv
 run:
 	python main.py
-up-f:
-	poetry export --without-hashes -f requirements.txt --output requirements.txt
-	sudo docker-compose --env-file .env up -d
 up:
 	poetry export --without-hashes -f requirements.txt --output requirements.txt
-	docker-compose --env-file .env up -d
+	docker-compose up -d
+migr:
+	@img=$$(docker ps -aqf "name=goit-pythonweb-hw-08_app") && \
+	docker exec -it $$img sh -c "alembic upgrade head"
