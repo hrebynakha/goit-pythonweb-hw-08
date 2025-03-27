@@ -3,11 +3,11 @@
 
 Create the .env file
 
-""".env
+```.env
 POSTGRES_PASSWORD=password1
 POSTGRES_DB=contacts_app
 DEBUG=False
-"""
+```
 
 Up containers 
 ```
