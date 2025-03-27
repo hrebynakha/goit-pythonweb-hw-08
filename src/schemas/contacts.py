@@ -5,6 +5,8 @@ from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr, PastDate
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
+from src.schemas.core import ErrorResponseModel
+
 
 class ContactModel(BaseModel):
     """Base contact model"""
@@ -25,34 +27,7 @@ class ContactResponse(ContactModel):
     updated_at: datetime
 
 
-# class TagResponse(TagModel):
-#     id: int
+class ContactNotFoundResponse(ErrorResponseModel):
+    """Contact not found schehma"""
 
-#     model_config = ConfigDict(from_attributes=True)
-
-
-# class NoteBase(BaseModel):
-#     title: str = Field(max_length=50)
-#     description: str = Field(max_length=150)
-
-
-# class NoteModel(NoteBase):
-#     tags: List[int]
-
-
-# class NoteUpdate(NoteModel):
-#     done: bool
-
-
-# class NoteStatusUpdate(BaseModel):
-#     done: bool
-
-
-# class NoteResponse(NoteBase):
-#     id: int
-#     done: bool
-#     created_at: datetime | None
-#     updated_at: Optional[datetime] | None
-#     tags: List[TagResponse] | None
-
-#     model_config = ConfigDict(from_attributes=True)
+    detail: str = Field(default="Contact not found")

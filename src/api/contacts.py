@@ -9,6 +9,7 @@ from src.database.db import get_db
 from src.schemas.contacts import ContactModel, ContactResponse
 from src.services.contacts import ContactService
 from src.exceptions.contacts import ContactNotFound
+from src.schemas.contacts import ContactNotFoundResponse
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
@@ -23,7 +24,13 @@ async def read_contacts(
     return contacts
 
 
-@router.get("/{contact_id}", response_model=ContactResponse)
+@router.get(
+    "/{contact_id}",
+    response_model=ContactResponse,
+    responses={
+        404: {"model": ContactNotFoundResponse, "description": "Not found response"},
+    },
+)
 async def read_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
     """Get contact by ID"""
     contact_service = ContactService(db)
@@ -33,14 +40,24 @@ async def read_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
     return contact
 
 
-@router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=ContactResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_contact(body: ContactModel, db: AsyncSession = Depends(get_db)):
     """Create new contact"""
     contact_service = ContactService(db)
     return await contact_service.create_contact(body)
 
 
-@router.put("/{contact_id}", response_model=ContactResponse)
+@router.put(
+    "/{contact_id}",
+    response_model=ContactResponse,
+    responses={
+        404: {"model": ContactNotFoundResponse, "description": "Not found response"},
+    },
+)
 async def update_contact(
     body: ContactModel, contact_id: int, db: AsyncSession = Depends(get_db)
 ):
@@ -52,7 +69,13 @@ async def update_contact(
     return contact
 
 
-@router.delete("/{contact_id}", response_model=ContactResponse)
+@router.delete(
+    "/{contact_id}",
+    response_model=ContactResponse,
+    responses={
+        404: {"model": ContactNotFoundResponse, "description": "Not found response"},
+    },
+)
 async def remove_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
     """Delete contact by ID"""
     contact_service = ContactService(db)

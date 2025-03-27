@@ -1,13 +1,23 @@
 """Utils api view"""
-from fastapi import APIRouter, Depends, HTTPException, status
+
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 
 from src.database.db import get_db
+from src.schemas.utils import HealthCheckModel, HealthCheckErrorModel
+from src.exceptions.utils import DatabaseConfigError, DatabaseConnectionError
 
 router = APIRouter(tags=["utils"])
 
-@router.get("/healthchecker")
+
+@router.get(
+    "/healthchecker",
+    response_model=HealthCheckModel,
+    responses={
+        500: {"model": HealthCheckErrorModel, "description": "Database error"},
+    },
+)
 async def healthchecker(db: AsyncSession = Depends(get_db)):
     """Health check"""
     try:
@@ -15,13 +25,7 @@ async def healthchecker(db: AsyncSession = Depends(get_db)):
         result = result.scalar_one_or_none()
 
         if result is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Database is not configured correctly",
-            )
+            raise DatabaseConfigError
         return {"message": "Welcome to FastAPI!"}
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error connecting to the database",
-        ) from e
+        raise DatabaseConnectionError from e
