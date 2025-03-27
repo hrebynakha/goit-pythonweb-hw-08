@@ -8,7 +8,7 @@ from src.exceptions.contacts import EmailValueError
 
 
 class ContactService:
-    """Conact service"""
+    """Contact service"""
 
     def __init__(self, db: AsyncSession):
         self.repository = ContactRepository(db)

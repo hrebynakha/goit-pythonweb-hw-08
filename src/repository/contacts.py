@@ -13,7 +13,7 @@ from src.filters.contacts import contact_filter
 
 
 class ContactRepository:
-    """Conatct repo class"""
+    """Contact repo class"""
 
     def __init__(self, session: AsyncSession):
         self.db = session
