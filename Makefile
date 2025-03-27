@@ -10,3 +10,9 @@ f:
 	black . --exclude=venv
 run:
 	python main.py
+up-f:
+	poetry export --without-hashes -f requirements.txt --output requirements.txt
+	sudo docker-compose --env-file .env up -d
+up:
+	poetry export --without-hashes -f requirements.txt --output requirements.txt
+	docker-compose --env-file .env up -d

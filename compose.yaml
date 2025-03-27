@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+
+  db:
+    image:  postgres
+    environment:
+      POSTGRESS_DB: contacts_app
+      POSTGRESS_USER: postgres
+      POSTGRESS_PASSWORD: ${DB_PASSWORD}
