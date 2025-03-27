@@ -323,6 +323,24 @@ uvicorn = {version = ">=0.15.0", extras = ["standard"]}
 standard = ["uvicorn[standard] (>=0.15.0)"]
 
 [[package]]
+name = "fastapi-sa-orm-filter"
+version = "0.2.2"
+description = "FastAPI-SQLAlchemy filter, transform request query string to SQLAlchemy orm query"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "fastapi_sa_orm_filter-0.2.2-py3-none-any.whl", hash = "sha256:faf0990013a6b8330ee8b0c12372a45c6d3eb47d853901f5338ecf4ba0eb9c84"},
+    {file = "fastapi_sa_orm_filter-0.2.2.tar.gz", hash = "sha256:1a03e5bf1218abc3c499c7538788b30a5b589e87115350d17b64dae2997ee9a6"},
+]
+
+[package.dependencies]
+fastapi = "*"
+pydantic = "*"
+sqlalchemy = "*"
+sqlalchemy-to-pydantic = "*"
+
+[[package]]
 name = "greenlet"
 version = "3.1.1"
 description = "Lightweight in-process concurrent programming"
@@ -1172,6 +1190,22 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "sqlalchemy-to-pydantic"
+version = "0.0.8"
+description = "Tools to convert SQLAlchemy models to Pydantic models"
+optional = false
+python-versions = ">=3.10,<4.0"
+groups = ["main"]
+files = [
+    {file = "sqlalchemy_to_pydantic-0.0.8-py3-none-any.whl", hash = "sha256:e2b13b793b983cc43ec2291bd0dadc731c278017814b98140df8f1c468c4f837"},
+    {file = "sqlalchemy_to_pydantic-0.0.8.tar.gz", hash = "sha256:7af94ecd04c3ca1243975bba5e8e2b2e3928faf9f5ad98a555b0a1b90eec344e"},
+]
+
+[package.dependencies]
+pydantic = ">=2.3.0,<3.0.0"
+sqlalchemy = ">=2.0.20,<3.0.0"
+
+[[package]]
 name = "starlette"
 version = "0.46.1"
 description = "The little ASGI library that shines."
@@ -1508,5 +1542,5 @@ files = [
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.10"
-content-hash = "633344c9084cb91cd3e24b45e4008fa19ff3bfadc345552538c03cd29b2c2f68"
+python-versions = ">=3.10,<4.0"
+content-hash = "68cb3fa3f98690531c81be367c5fcaf5de2527e8bf9894757bd49848b99a297d"

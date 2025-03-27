@@ -1,5 +1,6 @@
 """Contacts repo"""
 
+from fastapi_sa_orm_filter.main import FilterCore
 from typing import List
 
 from sqlalchemy import select
@@ -8,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.contacts import Contact
 from src.schemas.contacts import ContactModel
 
+from src.filters.contacts import contact_filter
+
 
 class ContactRepository:
     """Conatct repo class"""
@@ -15,10 +18,11 @@ class ContactRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
 
-    async def get_contacts(self, skip: int, limit: int) -> List[Contact]:
+    async def get_contacts(self, filter_: str, skip: int, limit: int) -> List[Contact]:
         """Get contcats in database and return by limit"""
-        command = select(Contact).offset(skip).limit(limit)
-        contacts = await self.db.execute(command)
+        filter_inst = FilterCore(Contact, contact_filter)
+        query = filter_inst.get_query(filter_).offset(skip).limit(limit)
+        contacts = await self.db.execute(query)
         return contacts.scalars().all()
 
     async def get_contact_by_id(self, contact_id: int) -> Contact | None:
@@ -76,3 +80,10 @@ class ContactRepository:
             await self.db.delete(contact)
             await self.db.commit()
         return contact
+
+    async def search_contacts(self, limit: int = 100, **query_params) -> List[Contact]:
+        """Search contcats in database and return by limit 100"""
+        print(query_params)
+        command = select(Contact).filter(**query_params).limit(limit)
+        contacts = await self.db.execute(command)
+        return contacts.scalars().all()

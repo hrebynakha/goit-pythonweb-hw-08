@@ -2,7 +2,7 @@
 
 from typing import List
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
@@ -10,17 +10,22 @@ from src.schemas.contacts import ContactModel, ContactResponse
 from src.services.contacts import ContactService
 from src.exceptions.contacts import ContactNotFound
 from src.schemas.contacts import ContactNotFoundResponse
+from src.helpers.helpers import filter_normalize
+
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
 
 @router.get("/", response_model=List[ContactResponse])
 async def read_contacts(
-    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
+    skip: int = 0,
+    limit: int = 100,
+    filter: str = Query(default=""),  # pylint: disable=redefined-builtin
+    db: AsyncSession = Depends(get_db),
 ):
     """Return contacts list"""
     contact_service = ContactService(db)
-    contacts = await contact_service.get_contacts(skip, limit)
+    contacts = await contact_service.get_contacts(filter_normalize(filter), skip, limit)
     return contacts
 
 
@@ -83,3 +88,23 @@ async def remove_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
     if contact is None:
         raise ContactNotFound
     return contact
+
+
+# @router.get("/search", response_model=List[ContactResponse])
+# async def search_contacts(
+#     first_name=None,
+#     last_name=None,
+#     email=None,
+#     phone=None,
+#     db: AsyncSession = Depends(get_db),
+# ):
+#     """Return contacts list"""
+#     contact_service = ContactService(db)
+#     query_params = dict(
+#         first_name,
+#         last_name,
+#         email,
+#         phone,
+#     )
+#     contacts = await contact_service.search_contacts(**query_params)
+#     return contacts

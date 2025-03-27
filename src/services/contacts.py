@@ -20,9 +20,9 @@ class ContactService:
             raise EmailValueError(f"Contact with this email {body.email} alredy exists")
         return await self.repository.create_contact(body)
 
-    async def get_contacts(self, skip: int, limit: int):
+    async def get_contacts(self, filter_: str, skip: int, limit: int):
         """Get contacts service"""
-        return await self.repository.get_contacts(skip, limit)
+        return await self.repository.get_contacts(filter_, skip, limit)
 
     async def get_contact(self, contact_id: int):
         """get contact by id"""
@@ -40,3 +40,7 @@ class ContactService:
     async def remove_contact(self, contact_id: int):
         """Remove contact by ID"""
         return await self.repository.remove_contact(contact_id)
+
+    async def search_contacts(self, **query_params):
+        """Get contacts service"""
+        return await self.repository.search_contacts(**query_params)
