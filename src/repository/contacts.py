@@ -1,14 +1,15 @@
 """Contacts repo"""
 
-from fastapi_sa_orm_filter.main import FilterCore
 from typing import List
+from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select
+from fastapi_sa_orm_filter.main import FilterCore
+
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.contacts import Contact
 from src.schemas.contacts import ContactModel
-
 from src.filters.contacts import contact_filter
 
 
@@ -27,8 +28,8 @@ class ContactRepository:
 
     async def get_contact_by_id(self, contact_id: int) -> Contact | None:
         """Get contact in databse by ID"""
-        command = select(Contact).filter_by(id=contact_id)
-        contact = await self.db.execute(command)
+        query = select(Contact).filter_by(id=contact_id)
+        contact = await self.db.execute(query)
         return contact.scalar_one_or_none()
 
     async def get_contact_by_email(
@@ -36,12 +37,12 @@ class ContactRepository:
     ) -> Contact | None:
         """Get contact in databse by email"""
         if contact_id:
-            command = select(Contact).filter(
+            query = select(Contact).filter(
                 Contact.email == contact_email, Contact.id != contact_id
             )
         else:
-            command = select(Contact).filter_by(email=contact_email)
-        contact = await self.db.execute(command)
+            query = select(Contact).filter_by(email=contact_email)
+        contact = await self.db.execute(query)
         return contact.scalar_one_or_none()
 
     async def create_contact(self, body: ContactModel) -> Contact:
@@ -81,9 +82,22 @@ class ContactRepository:
             await self.db.commit()
         return contact
 
-    async def search_contacts(self, limit: int = 100, **query_params) -> List[Contact]:
-        """Search contcats in database and return by limit 100"""
-        print(query_params)
-        command = select(Contact).filter(**query_params).limit(limit)
-        contacts = await self.db.execute(command)
+    async def get_upcoming_birthday_contacts(
+        self,
+        skip: int,
+        limit: int,
+        time_range: int = 7,
+    ) -> List[Contact]:
+        """Search contacts in database where birthday for user is in set range.Default - 7 day"""
+        current_time = datetime.now(tz=timezone.utc)
+        delta = current_time + timedelta(days=time_range)
+        start = current_time.strftime("%m-%d")
+        end = delta.strftime("%m-%d")
+        query = (
+            select(Contact)
+            .filter(func.to_char(Contact.birthday, "MM-DD").between(start, end))
+            .offset(skip)
+            .limit(limit)
+        )
+        contacts = await self.db.execute(query)
         return contacts.scalars().all()

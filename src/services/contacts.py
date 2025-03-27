@@ -41,6 +41,8 @@ class ContactService:
         """Remove contact by ID"""
         return await self.repository.remove_contact(contact_id)
 
-    async def search_contacts(self, **query_params):
+    async def get_upcoming_birthday_contacts(self, skip, limit, time_range):
         """Get contacts service"""
-        return await self.repository.search_contacts(**query_params)
+        return await self.repository.get_upcoming_birthday_contacts(
+            skip, limit, time_range
+        )

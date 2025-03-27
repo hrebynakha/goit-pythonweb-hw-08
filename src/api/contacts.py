@@ -29,6 +29,21 @@ async def read_contacts(
     return contacts
 
 
+@router.get("/get-upcoming-birthday", response_model=List[ContactResponse])
+async def get_upcoming_birthday(
+    skip: int = 0,
+    limit: int = 100,
+    time_range: int = 7,
+    db: AsyncSession = Depends(get_db),
+):
+    """Return contacts list"""
+    contact_service = ContactService(db)
+    contacts = await contact_service.get_upcoming_birthday_contacts(
+        skip, limit, time_range
+    )
+    return contacts
+
+
 @router.get(
     "/{contact_id}",
     response_model=ContactResponse,
@@ -88,23 +103,3 @@ async def remove_contact(contact_id: int, db: AsyncSession = Depends(get_db)):
     if contact is None:
         raise ContactNotFound
     return contact
-
-
-# @router.get("/search", response_model=List[ContactResponse])
-# async def search_contacts(
-#     first_name=None,
-#     last_name=None,
-#     email=None,
-#     phone=None,
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     """Return contacts list"""
-#     contact_service = ContactService(db)
-#     query_params = dict(
-#         first_name,
-#         last_name,
-#         email,
-#         phone,
-#     )
-#     contacts = await contact_service.search_contacts(**query_params)
-#     return contacts
