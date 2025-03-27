@@ -1,4 +1,5 @@
 """Db configuration file"""
+
 import contextlib
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,8 +11,10 @@ from sqlalchemy.ext.asyncio import (
 
 from src.conf.config import config
 
+
 class DatabaseSessionManager:
     """Session manager"""
+
     def __init__(self, url: str):
         self._engine: AsyncEngine | None = create_async_engine(url)
         self._session_maker: async_sessionmaker = async_sessionmaker(
@@ -28,11 +31,13 @@ class DatabaseSessionManager:
             yield session
         except SQLAlchemyError as e:
             await session.rollback()
-            raise  e from e
+            raise e from e
         finally:
             await session.close()
 
+
 sessionmanager = DatabaseSessionManager(config.get_db_url())
+
 
 async def get_db():
     """Get database session"""

@@ -1,5 +1,7 @@
 """Env migartions file"""
 
+import importlib
+import pkgutil
 import asyncio
 from logging.config import fileConfig
 
@@ -10,6 +12,12 @@ from alembic import context
 
 from src.conf.config import config as conf
 from src.database.basic import Base
+import src.models
+
+for _, module_name, _ in pkgutil.iter_modules(src.models.__path__):
+    # auto import all models from src.models
+    importlib.import_module(f"src.models.{module_name}")
+
 
 config = context.config  # pylint: disable=no-member
 
@@ -19,7 +27,6 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 config.set_main_option("sqlalchemy.url", conf.get_db_url())
-print(target_metadata)
 
 
 def run_migrations(connection: Connection):
