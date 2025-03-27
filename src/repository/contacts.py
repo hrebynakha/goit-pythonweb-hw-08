@@ -91,8 +91,7 @@ class ContactRepository:
         """Search contacts in database where birthday for user is in set range.Default - 7 day"""
         current_time = datetime.now(tz=timezone.utc)
         delta = current_time + timedelta(days=time_range)
-        start = current_time.strftime("%m-%d")
-        end = delta.strftime("%m-%d")
+        start, end = current_time.strftime("%m-%d"), delta.strftime("%m-%d")
         query = (
             select(Contact)
             .filter(func.to_char(Contact.birthday, "MM-DD").between(start, end))
