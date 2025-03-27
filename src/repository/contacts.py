@@ -19,10 +19,20 @@ class ContactRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
 
-    async def get_contacts(self, filter_: str, skip: int, limit: int) -> List[Contact]:
+    async def get_contacts(
+        self,
+        filter_: str,
+        skip: int,
+        limit: int,
+    ) -> List[Contact]:
         """Get contcats in database and return by limit"""
         filter_inst = FilterCore(Contact, contact_filter)
-        query = filter_inst.get_query(filter_).offset(skip).limit(limit)
+        query = (
+            filter_inst.get_query(filter_)
+            .offset(skip)
+            .limit(limit)
+            .order_by(Contact.id)
+        )
         contacts = await self.db.execute(query)
         return contacts.scalars().all()
 
