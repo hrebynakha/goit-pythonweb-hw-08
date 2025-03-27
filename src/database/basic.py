@@ -1,4 +1,4 @@
-"""App models"""
+"""App basci configuration for models"""
 from sqlalchemy.orm import DeclarativeBase
 
 class Base(DeclarativeBase):

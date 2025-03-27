@@ -1,3 +1,5 @@
+"""Env migartions file"""
+
 import asyncio
 from logging.config import fileConfig
 
@@ -7,9 +9,9 @@ from sqlalchemy import pool
 from alembic import context
 
 from src.conf.config import config as conf
-from database.basic import Base
+from src.database.basic import Base
 
-config = context.config
+config = context.config  # pylint: disable=no-member
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -17,14 +19,20 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 config.set_main_option("sqlalchemy.url", conf.get_db_url())
+print(target_metadata)
 
 
 def run_migrations(connection: Connection):
-    context.configure(connection=connection, target_metadata=target_metadata)
-    with context.begin_transaction():
-        context.run_migrations()
+    """Run migration function"""
+    context.configure(  # pylint: disable=no-member
+        connection=connection, target_metadata=target_metadata
+    )
+    with context.begin_transaction():  # pylint: disable=no-member
+        context.run_migrations()  # pylint: disable=no-member
+
 
 async def run_async_migrations():
+    """Run migration async"""
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -36,6 +44,7 @@ async def run_async_migrations():
 
     await connectable.dispose()
 
+
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
@@ -45,7 +54,6 @@ def run_migrations_online() -> None:
     """
     asyncio.run(run_async_migrations())
 
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
+
+if not context.is_offline_mode():  # pylint: disable=no-member
     run_migrations_online()
