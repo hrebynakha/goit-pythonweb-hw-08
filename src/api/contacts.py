@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.db import get_db
 from src.schemas.contacts import ContactModel, ContactResponse
 from src.services.contacts import ContactService
-from src.execptions.contacts import ContactNotFound
+from src.exceptions.contacts import ContactNotFound
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 

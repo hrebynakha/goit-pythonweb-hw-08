@@ -1,6 +1,6 @@
-"""Execption module"""
+"""Exceptions module"""
 
-from src.execptions.core import AppKeyError, AppValueError
+from src.exceptions.core import AppKeyError, AppValueError
 
 
 class EmailValueError(AppValueError):

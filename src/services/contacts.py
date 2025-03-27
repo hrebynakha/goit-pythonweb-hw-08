@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.repository.contacts import ContactRepository
 from src.schemas.contacts import ContactModel
-from src.execptions.contacts import EmailValueError
+from src.exceptions.contacts import EmailValueError
 
 
 class ContactService:

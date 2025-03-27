@@ -3,8 +3,8 @@
 from fastapi import FastAPI, Request, status
 from src.api import utils, contacts
 
-from src.execptions.core import AppHttpError, AppValueError, AppKeyError
-from src.execptions.contacts import EmailValueError, ContactNotFound
+from src.exceptions.core import AppHttpError, AppValueError, AppKeyError
+from src.exceptions.contacts import EmailValueError, ContactNotFound
 
 app = FastAPI()
 
