@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi_sa_orm_filter.main import FilterCore
 
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.contacts import Contact
@@ -68,20 +68,12 @@ class ContactRepository:
     ) -> Contact | None:
         """Update contact in database"""
         contact = await self.get_contact_by_id(contact_id)
-        if contact:
-            if contact.email != body.email:
-                # Check if the new email already exists
-                existing_contact = await self.get_contact_by_email(body.email)
-                if existing_contact:
-                    raise ValueError(
-                        f"Contact with this email {body.email} alredy exists"
-                    )
-            for field, value in body.model_dump(exclude_unset=True).items():
-                current_value = getattr(contact, field)
-                if current_value != value:
-                    setattr(contact, field, value)
-            await self.db.commit()
-            await self.db.refresh(contact)
+        for field, value in body.model_dump(exclude_unset=True).items():
+            current_value = getattr(contact, field)
+            if current_value != value:
+                setattr(contact, field, value)
+        await self.db.commit()
+        await self.db.refresh(contact)
         return contact
 
     async def remove_contact(self, contact_id: int) -> Contact | None:
@@ -98,13 +90,23 @@ class ContactRepository:
         limit: int,
         time_range: int = 7,
     ) -> List[Contact]:
-        """Search contacts in database where birthday for user is in set range.Default - 7 day"""
+        """
+        Search contacts in database where birthday for user is in set range.Default - 7 day
+        Debug to change current time manually:
+        current_time = datetime.strptime("Dec 24 2005  1:33PM", "%b %d %Y %I:%M%p")
+        """
         current_time = datetime.now(tz=timezone.utc)
         delta = current_time + timedelta(days=time_range)
         start, end = current_time.strftime("%m-%d"), delta.strftime("%m-%d")
+        fn_ = or_ if current_time.month > delta.month else and_
         query = (
             select(Contact)
-            .filter(func.to_char(Contact.birthday, "MM-DD").between(start, end))
+            .filter(
+                fn_(
+                    func.to_char(Contact.birthday, "MM-DD") >= start,
+                    func.to_char(Contact.birthday, "MM-DD") <= end,
+                )
+            )
             .offset(skip)
             .limit(limit)
         )
